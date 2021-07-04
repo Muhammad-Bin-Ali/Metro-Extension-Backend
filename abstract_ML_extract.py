@@ -20,6 +20,7 @@ def get_summary(text):
     model=BartForConditionalGeneration.from_pretrained('facebook/bart-large-cnn') #getting pretrained BART model
 
     sents = break_article(text)
+    summary = []
 
     for sent in sents:
         sent = " ".join([str(i) for i in sent])
@@ -29,9 +30,10 @@ def get_summary(text):
         summary_ids = model.generate(inputs['input_ids'], early_stopping = True, min_length = 150)
 
         # Decoding and printing the summary
-        bart_summary = tokenizer.decode(summary_ids[0], skip_special_tokens=True)
-        print(bart_summary)
-        print()
-
+        summary.append(tokenizer.decode(summary_ids[0], skip_special_tokens=True))
+    
+    return " ".join([str(i).strip() for i in summary])
+        
+        
 
 
