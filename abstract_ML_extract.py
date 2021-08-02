@@ -1,4 +1,5 @@
 from transformers import BartForConditionalGeneration, BartTokenizer
+from parse_article import parse
 
 #breaks text into chunks of 1024 words
 def break_article(text):
@@ -23,8 +24,12 @@ def get_summary(text):
     summary = []
 
     for sent in sents:
-        sent = " ".join([str(i) for i in sent])
+        sent = " ".join([str(i) for i in sent]) 
         
+        #text cleanup
+        sent = sent.encode("ascii", "ignore")
+        sent = sent.decode()
+
         # Encoding the inputs and passing them to model.generate()
         inputs = tokenizer.batch_encode_plus([sent], return_tensors='pt', max_length=1024, truncation=True) 
         summary_ids = model.generate(inputs['input_ids'], early_stopping = True, min_length = 150)
@@ -33,7 +38,3 @@ def get_summary(text):
         summary.append(tokenizer.decode(summary_ids[0], skip_special_tokens=True))
     
     return " ".join([str(i).strip() for i in summary])
-        
-        
-
-

@@ -18,10 +18,8 @@ class Summarize(Resource):
     def post(self):
         args = request_args.parse_args() #stow
         url = args["url"]
-        print(url)
         article = parse(url)
-        summary = get_summary(article)  
-        
+        summary = get_summary(article) 
         return {"summary": summary}
 
 #Adding resource to API

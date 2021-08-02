@@ -1,6 +1,5 @@
 import requests
 from bs4 import BeautifulSoup
-from abstract_ML_extract import get_summary
 
 def parse(url):
     response = requests.get(url)
