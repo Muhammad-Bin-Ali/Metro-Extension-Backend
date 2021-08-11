@@ -13,8 +13,8 @@ api = Api(app)
 #validating arguments sent in form
 request_args = reqparse.RequestParser()
 request_args.add_argument("url", type = str)
-request_args.add_argument("User-ID", type = str, location = 'headers')
-request_args.add_argument("link", type = str)
+request_args.add_argument("email", type = str)
+request_args.add_argument("link-to-save", type = str)
 
 #Resource that deals with requests
 class Main(Resource):
@@ -28,16 +28,16 @@ class Main(Resource):
             return {"summary": summary}, 200
         
         if user_id:
-            createUser(user_id)
-            return flask.Response(status=201)
+            createUser(user_id, args["email"])
+            return True, 201
 
     def put(self, user_id):
         args = request_args.parse_args()
 
-        if args['link']:
-            link = args['link']
+        if args['link-to-save']:
+            link = args['link-to-save']
             addLink(user_id, link)
-            return flask.Response(status=200)
+            return True, 200
 
     def get(self, user_id):
         if user_id:
