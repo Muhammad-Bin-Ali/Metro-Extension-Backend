@@ -3,7 +3,7 @@ from flask_restful import Api, Resource, reqparse
 from abstract_ML_extract import get_summary
 from parse_article import parse
 from flask_cors import CORS
-from basic_operations import createUser, addLink, getAll
+from basic_operations import createUser, addLink, getAll, delLink
 
 #instantiating App
 app = Flask(__name__)
@@ -13,8 +13,11 @@ api = Api(app)
 #validating arguments sent in form
 request_args = reqparse.RequestParser()
 request_args.add_argument("url", type = str)
+request_args.add_argument("body", type = str)
+request_args.add_argument("title", type = str)
 request_args.add_argument("email", type = str)
-request_args.add_argument("link-to-save", type = str)
+request_args.add_argument("save_link", type = str)
+request_args.add_argument("del_link", type = str)
 
 #Resource that deals with requests
 class Main(Resource):
@@ -34,10 +37,16 @@ class Main(Resource):
     def put(self, user_id):
         args = request_args.parse_args()
 
-        if args['link-to-save']:
-            link = args['link-to-save']
-            addLink(user_id, link)
-            return True, 200
+        if args['save_link']:
+            title = args['title']
+            body = args['body']
+            link = args['url']
+          
+            result = addLink(user_id, link, title, body)
+            if result:
+                return True, 201
+            else: 
+                return False, 409
 
     def get(self, user_id):
         if user_id:
@@ -47,6 +56,19 @@ class Main(Resource):
             else: 
                 return False, 404
 
+    def delete(self, user_id):
+        args = request_args.parse_args()
+
+        if args['del_link']:
+            title = args['title']
+            body = args['body']
+            link = args['url']
+
+            result = delLink(user_id, link, title, body)
+            if result:
+                return True, 201
+            else: 
+                return False, 409   
 
 #Adding resource to API
 api.add_resource(Main, "/summarize-article/<string:user_id>")
