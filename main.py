@@ -3,7 +3,7 @@ from flask_restful import Api, Resource, reqparse
 from abstract_ML_extract import get_summary
 from parse_article import parse
 from flask_cors import CORS
-from basic_operations import createUser, addLink, getAll, delLink
+from basic_operations import createUser, addLink, getAll, delLink, checkIfExist, getSaved
 
 #instantiating App
 app = Flask(__name__)
@@ -18,6 +18,7 @@ request_args.add_argument("title", type = str)
 request_args.add_argument("email", type = str)
 request_args.add_argument("save_link", type = str)
 request_args.add_argument("del_link", type = str)
+request_args.add_argument('get_saved_link', type = str)
 
 #Resource that deals with requests
 class Main(Resource):
@@ -27,9 +28,21 @@ class Main(Resource):
         if args['url']:
             url = args["url"]
             article = parse(url)
-            summary = get_summary(article) 
-            return {"summary": summary}, 200
+            summary = get_summary(article)
+            exists = checkIfExist(user_id, url) 
+            if summary:
+                return {"summary": summary, "exists": exists}, 200
+            else: 
+                return False, 409
         
+        if args['get_saved_link']:
+            title = args['title']
+            body = getSaved(user_id, title)
+            if body:
+                return {"body": body}, 200
+            else:
+                return False, 404
+
         if user_id:
             createUser(user_id, args["email"])
             return True, 201
@@ -62,9 +75,9 @@ class Main(Resource):
         if args['del_link']:
             title = args['title']
             body = args['body']
-            link = args['url']
 
-            result = delLink(user_id, link, title, body)
+
+            result = delLink(user_id, title, body)
             if result:
                 return True, 201
             else: 
