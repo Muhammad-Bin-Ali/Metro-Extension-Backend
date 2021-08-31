@@ -28,12 +28,17 @@ class Main(Resource):
         if args['url']:
             url = args["url"]
             article = parse(url)
-            summary = get_summary(article)
-            exists = checkIfExist(user_id, url) 
-            if summary:
-                return {"summary": summary, "exists": exists}, 200
-            else: 
-                return False, 409
+
+            if article: #if the parsing algorithm was able to parse <p> tags
+                summary = get_summary(article)
+                exists = checkIfExist(user_id, url) 
+
+                if summary: #if the text was able to be summarized
+                    return {"summary": summary, "exists": exists}, 200
+                else: 
+                    return {"summary": "", "exists": False}, 409
+            else: #if no <p> tags were found in the page
+                return {"summary": "", "exists": False}, 409
         
         if args['get_saved_link']:
             title = args['title']
@@ -41,7 +46,7 @@ class Main(Resource):
             if body:
                 return {"body": body}, 200
             else:
-                return False, 404
+                return {"body": ""}, 404
 
         if user_id:
             createUser(user_id, args["email"])
@@ -67,7 +72,7 @@ class Main(Resource):
             if links:
                 return {"links": links}, 200
             else: 
-                return False, 404
+                return {"links": ""}, 404
 
     def delete(self, user_id):
         args = request_args.parse_args()

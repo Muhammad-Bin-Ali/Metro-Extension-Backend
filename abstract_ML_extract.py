@@ -17,24 +17,30 @@ def break_article(text):
     return sents
 
 def get_summary(text):
-    tokenizer=BartTokenizer.from_pretrained('facebook/bart-large-cnn') #getting pretrained BART tokenizer
-    model=BartForConditionalGeneration.from_pretrained('facebook/bart-large-cnn') #getting pretrained BART model
+    try:
+        tokenizer=BartTokenizer.from_pretrained('facebook/bart-large-cnn') #getting pretrained BART tokenizer
+        model=BartForConditionalGeneration.from_pretrained('facebook/bart-large-cnn') #getting pretrained BART model
 
-    sents = break_article(text)
-    summary = []
+        sents = break_article(text)
+        summary = []
 
-    for sent in sents:
-        sent = " ".join([str(i) for i in sent]) 
+        for sent in sents:
+            sent = " ".join([str(i) for i in sent]) 
+            
+            #text cleanup
+            sent = sent.encode("ascii", "ignore")
+            sent = sent.decode()
+
+            # Encoding the inputs and passing them to model.generate()
+            inputs = tokenizer.batch_encode_plus([sent], return_tensors='pt', max_length=1024, truncation=True) 
+            summary_ids = model.generate(inputs['input_ids'], early_stopping = True, min_length = 150)
+
+            # Decoding and printing the summary
+            summary.append(tokenizer.decode(summary_ids[0], skip_special_tokens=True))
+
+        return " ".join([str(i).strip() for i in summary])
         
-        #text cleanup
-        sent = sent.encode("ascii", "ignore")
-        sent = sent.decode()
-
-        # Encoding the inputs and passing them to model.generate()
-        inputs = tokenizer.batch_encode_plus([sent], return_tensors='pt', max_length=1024, truncation=True) 
-        summary_ids = model.generate(inputs['input_ids'], early_stopping = True, min_length = 150)
-
-        # Decoding and printing the summary
-        summary.append(tokenizer.decode(summary_ids[0], skip_special_tokens=True))
+    except: 
+        return False
     
-    return " ".join([str(i).strip() for i in summary])
+    
