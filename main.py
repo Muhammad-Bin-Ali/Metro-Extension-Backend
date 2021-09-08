@@ -69,7 +69,7 @@ class Main(Resource):
     def get(self, user_id):
         if user_id:
             links = getAll(user_id)
-            if links:
+            if links != 404:
                 return {"links": links}, 200
             else: 
                 return {"links": ""}, 404

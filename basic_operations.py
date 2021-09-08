@@ -137,7 +137,7 @@ def getAll(id):
 
         else:
             client.close() #close connection
-            return False
+            return 404
 
     except:
         client.close()
