@@ -1,4 +1,6 @@
-from transformers import BartForConditionalGeneration, BartTokenizer
+from transformers import BartForConditionalGeneration, BartTokenizer, pipeline
+from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
+
 from parse_article import parse
 
 #breaks text into chunks of 1024 words
@@ -18,22 +20,23 @@ def break_article(text):
 
 def get_summary(text):
     try:
-        tokenizer=BartTokenizer.from_pretrained('facebook/bart-large-cnn') #getting pretrained BART tokenizer
-        model=BartForConditionalGeneration.from_pretrained('facebook/bart-large-cnn') #getting pretrained BART model
+        tokenizer=BartTokenizer.from_pretrained('sshleifer/distilbart-cnn-12-6') #getting pretrained BART tokenizer
+        model=BartForConditionalGeneration.from_pretrained('sshleifer/distilbart-cnn-12-6') #getting pretrained BART model
 
         sents = break_article(text)
         summary = []
 
         for sent in sents:
             sent = " ".join([str(i) for i in sent]) 
-            
+
             #text cleanup
             sent = sent.encode("ascii", "ignore")
             sent = sent.decode()
 
             # Encoding the inputs and passing them to model.generate()
-            inputs = tokenizer.batch_encode_plus([sent], return_tensors='pt', max_length=1024, truncation=True) 
-            summary_ids = model.generate(inputs['input_ids'], early_stopping = True, min_length = 150)
+            # inputs = tokenizer.batch_encode_plus([sent], return_tensors='pt', max_length=1024, truncation=True) 
+            inputs = tokenizer.__call__([sent], is_split_into_words=True, max_length=1024, return_tensors='pt')
+            summary_ids = model.generate(inputs['input_ids'])
 
             # Decoding and printing the summary
             summary.append(tokenizer.decode(summary_ids[0], skip_special_tokens=True))
@@ -43,4 +46,6 @@ def get_summary(text):
     except: 
         return False
     
-    
+if __name__ == "__main__":
+    text = parse("https://www.cbc.ca/radio/thecurrent/the-current-for-sept-8-2021-1.6167882/former-afghanistan-correspondent-reflects-on-what-he-once-believed-was-a-noble-war-1.6168383")
+    print(get_summary(text))
