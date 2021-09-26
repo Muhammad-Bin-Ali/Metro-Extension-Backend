@@ -32,10 +32,10 @@ def get_summary(text):
             #text cleanup
             sent = sent.encode("ascii", "ignore")
             sent = sent.decode()
-
+        
             # Encoding the inputs and passing them to model.generate()
-            inputs = tokenizer.__call__([sent], is_split_into_words=True, max_length=1024, return_tensors='pt')
-            summary_ids = model.generate(inputs['input_ids'], min_length=40)
+            inputs = tokenizer.encode_plus(sent, max_length=1024, return_tensors='pt')
+            summary_ids = model.generate(input_ids = inputs['input_ids'], min_length=30)
 
             # Decoding and printing the summary
             summary.append(tokenizer.decode(summary_ids[0], skip_special_tokens=True))
@@ -46,5 +46,5 @@ def get_summary(text):
         return False
     
 if __name__ == "__main__":
-    text = parse("https://torontosun.com/news/world/youve-been-served-prince-andrew-hit-with-underage-sex-assault-lawsuit")
+    text = parse("https://www.ctvnews.ca/politics/two-michaels-land-safely-in-canada-after-nearly-three-years-of-detention-in-china-1.5600335")
     print(get_summary(text))
