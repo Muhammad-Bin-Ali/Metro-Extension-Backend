@@ -1,5 +1,4 @@
-from transformers import BartForConditionalGeneration, BartTokenizer, pipeline
-from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
+from transformers import BartForConditionalGeneration, BartTokenizer
 
 from parse_article import parse
 
@@ -20,9 +19,9 @@ def break_article(text):
 
 def get_summary(text):
     try:
-        tokenizer=BartTokenizer.from_pretrained('facebook/bart-large-cnn') #getting pretrained BART tokenizer
-        model=BartForConditionalGeneration.from_pretrained('facebook/bart-large-cnn') #getting pretrained BART model
-
+        tokenizer=BartTokenizer.from_pretrained('./model') #getting pretrained BART tokenizer (facebook/bart-large-cnn)
+        model=BartForConditionalGeneration.from_pretrained('./model') #getting pretrained BART model (facebook/bart-large-cnn)
+        
         sents = break_article(text)
         summary = []
 
