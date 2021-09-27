@@ -1,7 +1,6 @@
 from datetime import datetime  # This will be needed later
 import os
 
-from pprint import pprint
 from dotenv import load_dotenv
 from pymongo import MongoClient
 
@@ -138,7 +137,7 @@ def getAll(id):
 
         else:
             client.close() #close connection
-            return False
+            return 404
 
     except:
         client.close()
