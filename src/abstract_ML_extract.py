@@ -1,6 +1,6 @@
 from transformers import BartForConditionalGeneration, BartTokenizer
-
 from parse_article import parse
+import torch
 
 #breaks text into chunks of 1024 words
 def break_article(text):
@@ -19,9 +19,12 @@ def break_article(text):
 
 def get_summary(text):
     try:
-        tokenizer=BartTokenizer.from_pretrained('./model') #getting pretrained BART tokenizer (facebook/bart-large-cnn)
-        model=BartForConditionalGeneration.from_pretrained('./model') #getting pretrained BART model (facebook/bart-large-cnn)
-        
+        device = "cuda:0" if torch.cuda.is_available() else "cpu"
+
+        tokenizer=BartTokenizer.from_pretrained('facebook/bart-large-cnn') #getting pretrained BART tokenizer (facebook/bart-large-cnn)
+        model=BartForConditionalGeneration.from_pretrained('facebook/bart-large-cnn').to(device) #getting pretrained BART model (facebook/bart-large-cnn)
+      
+
         sents = break_article(text)
         summary = []
 
@@ -33,7 +36,7 @@ def get_summary(text):
             sent = sent.decode()
         
             # Encoding the inputs and passing them to model.generate()
-            inputs = tokenizer.encode_plus(sent, max_length=1024, return_tensors='pt')
+            inputs = tokenizer.encode_plus(sent, max_length=1024, return_tensors='pt').to(device)
             summary_ids = model.generate(input_ids = inputs['input_ids'], min_length=30)
 
             # Decoding and printing the summary
@@ -45,5 +48,6 @@ def get_summary(text):
         return False
     
 if __name__ == "__main__":
-    text = parse("https://www.ctvnews.ca/politics/two-michaels-land-safely-in-canada-after-nearly-three-years-of-detention-in-china-1.5600335")
+    text = parse("https://www.ctvnews.ca/world/syria-executes-24-people-over-last-year-s-deadly-wildfires-1.5632335")
     print(get_summary(text))
+    # print(torch.cuda.is_available())

@@ -1,6 +1,5 @@
 from datetime import datetime  # This will be needed later
 import os
-
 from dotenv import load_dotenv
 from pymongo import MongoClient
 
@@ -70,8 +69,8 @@ def addLink(id, link, title, summary):
         
         if saved_links:
             #if the url of the last link is not equal to the link that is currently being passed in
-            if saved_links[-1][3] != link: 
-                result = users.update_one({'id': id}, {'$push': {'saved-links': [title, datetime.now(), summary, link]}})
+            # if saved_links[-1][3] != link: 
+            result = users.update_one({'id': id}, {'$push': {'saved-links': [title, datetime.now(), summary, link]}})
         else:
             result = users.update_one({'id': id}, {'$push': {'saved-links': [title, datetime.now(), summary, link]}})
 
@@ -169,4 +168,5 @@ def getSaved(id, title):
 
 
 if __name__ == "__main__":
-    print(getAll("104845424937636392509"))
+    addLink("104845424937636392509", "Test", "https://www.bbc.com/news/world-australia-59889522",
+     "The U.S. attacked an Islamic State planner in Afghanistan in retaliation for a deadly bombing outside Kabul airport. There was a high risk of further blasts as it winds up its mission to evacuate civilians and withdraw troops. The attack killed scores of Afghans and 13 U.N. service members. Most of the more than 20 allied countries involved in airlifting their citizens and Afghans out of Kabul said they had completed evacuations by Friday. Britain was ending its operation on Saturday, its armed forces chief Nick Carter said, adding that the focus would then turn to withdrawing British troops. Britain said any recognition with the West should depend on how it acts with the Taliban and must be conditional on allowing safe passage for our site, you agree to our Terms of Service and Privacy Policy. We are happy to provide you with information about our products and services. We hope that you will use this information to help you in your daily life. Please share your photos and videos with us on our Facebook and Twitter accounts. We would like to hear from you about your experiences with our site. Please send them to: mail@dailymail.co.uk and we will feature them in a weekly Newsquiz. For more information, visit our News Quiz page or our Facebook page. For confidential support, call the Samaritans on 08457 90 90 90 or visit a local Samaritans branch, or see www.ge. For confidential support, call the Samaritans on 08457 90 90 90 or visit a local Samaritans ge. For confidential support, call the Samaritans on 08457 90 90 90 or visit a local Samaritans ge. For confidential support, call the Samaritans on 08457 90 90 90 or visit a local Samaritans ")
